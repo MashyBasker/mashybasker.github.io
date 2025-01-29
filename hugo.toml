@@ -1,0 +1,56 @@
+baseURL = 'https://example.org/'
+languageCode = 'en-us'
+theme = 'maverick'
+# title = "okabe"
+
+[menu]
+  [[menu.main]]
+    identifier = "home"
+    name = "Home"
+    url = "/"
+  [[menu.main]]
+    identifier = "about" 
+    name = "About"
+    url = "/about/"
+  [[menu.main]]
+    identifier = "work"
+    name = "Work"
+    url = "/work/"
+  [[menu.main]]
+    identifier = "library"
+    name = "Library"
+    url = "/library/"
+  # [[menu.main]]
+  #   identifier = "posts"
+  #   name = "Posts"
+  #   url = "/posts/"
+
+[markup]
+  [markup.goldmark.renderer]
+    unsafe = true
+  [markup.highlight]
+    anchorLineNos = false
+    codeFences = true
+    guessSyntax = false
+    hl_inline = false
+    lineAnchors = ''
+    lineNoStart = 1
+    lineNos = false
+    lineNumbersInTable = true
+    noClasses = true
+    noHl = false
+    style = 'monokailight'
+    tabWidth = 4
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+  section = ["HTML"]
+
+[taxonomies]
+  tag = "tags"
+  
+  
+[params]
+  items = 3
+  github = "https://github.com/MashyBasker"
+  twitter = "https://twitter.com/chisanmei"
+  resume = "/resume.pdf"

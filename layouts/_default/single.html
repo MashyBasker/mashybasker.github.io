@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  {{ partial "head.html" . }}
+<body>
+  <a class="skip-link" href="#main">Skip to main</a>
+  <main id="main">
+  <div class="content">
+    {{ partial "header.html" . }}
+    <section>
+      <h3 class="post">{{ .Title }}</h3>
+      {{ .Content }}
+    </section>
+    {{ if eq .Section "posts" }}
+    {{ if eq .Site.Params.comments.enabled true }}
+    <div id="comments">
+      {{ partial "comments.html" $ }}
+    </div>
+    {{ end }}
+    {{ end }}
+  </div>
+</main>
+</body>
+</html>
