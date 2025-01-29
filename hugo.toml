@@ -1,7 +1,8 @@
-baseURL = 'https://example.org/'
+baseURL = 'https://mashybasker.github.io/'
 languageCode = 'en-us'
 theme = 'maverick'
-# title = "okabe"
+title = "okabe"
+author = "Maharshi Basu"
 
 [menu]
   [[menu.main]]
@@ -50,7 +51,8 @@ theme = 'maverick'
   
   
 [params]
-  items = 3
+  items = 10
   github = "https://github.com/MashyBasker"
   twitter = "https://twitter.com/chisanmei"
   resume = "/resume.pdf"
+  # logo = "/assets/favicon.ico"
