@@ -9,18 +9,22 @@ author = "Maharshi Basu"
     identifier = "home"
     name = "Home"
     url = "/"
+    weight = 1
   [[menu.main]]
     identifier = "about" 
     name = "About"
     url = "/about/"
+    weight = 2
   [[menu.main]]
     identifier = "work"
     name = "Work"
     url = "/work/"
+    weight = 3
   [[menu.main]]
     identifier = "library"
     name = "Library"
     url = "/library/"
+    weight = 4
   # [[menu.main]]
   #   identifier = "posts"
   #   name = "Posts"
