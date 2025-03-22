@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
       console.log('Loading post content for:', postSlug);
       
       // Load the markdown file
-      const response = await fetch(`./posts/${postSlug}.md`);
+      const response = await fetch(`posts/${postSlug}.md`);
       if (!response.ok) {
         throw new Error(`Post not found: ${response.status}`);
       }
@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Fetch posts listing
   if (postsListElement || latestPostsElement) {
-    fetch('./posts/index.json')
+    fetch('posts/index.json')
       .then(response => response.json())
       .then(data => {
         console.log('Posts loaded:', data.length);
