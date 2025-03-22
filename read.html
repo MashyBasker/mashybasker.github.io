@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>basu / read</title>
+    <style>
+        body {
+            font-family: "JetBrains Mono", Courier, monospace;
+            line-height: 1.6;
+            color: #E5E9F0;
+            background-color: #2E3440;
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        a {
+            color: #81A1C1;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            color: #A3BE8C;
+            text-decoration: underline;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            font-weight: normal;
+            margin-bottom: 2rem;
+            color: #BF616A;
+        }
+        
+        .reading-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .reading-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            position: relative;
+        }
+        
+        .reading-link {
+            color: #D8DEE9;
+        }
+        
+        .reading-link:hover {
+            color: #a3be8c;
+        }
+        
+        .reading-date {
+            color: #4C566A;
+            text-align: right;
+            min-width: 100px;
+        }
+        
+        .tooltip {
+            visibility: hidden;
+            position: fixed;
+            background-color: #3B4252;
+            /* border: 1px solid #434C5E; */
+            color: #E5E9F0;
+            padding: 8px 10px;
+            border-radius: 8px;
+            width: auto;
+            max-width: 500px;
+            z-index: 100;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none; /* Allows mouse events to pass through */
+        }
+        
+        .author {
+            display: block;
+            margin-top: 5px;
+            color: #a3be8c;
+            /* font-style: italic; */
+            font-size: 0.85rem;
+        }
+        
+        .reading-link:hover + .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        nav {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #434C5E;
+            padding-bottom: 10px;
+        }
+        
+        footer {
+            margin-top: 60px;
+            color: #4C566A;
+            font-size: 0.9rem;
+            border-top: 1px solid #434C5E;
+            padding-top: 20px;
+        }
+        
+        /* Loading indicator */
+        #loading {
+            text-align: center;
+            color: #4C566A;
+            font-style: italic;
+        }
+        
+        /* Simple scanlines effect */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                rgba(46, 52, 64, 0) 50%, 
+                rgba(46, 52, 64, 0.25) 50%
+            );
+            background-size: 100% 4px;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0.15;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" style="margin-right: 15px;">home</a>
+        <a href="me.html" style="margin-right: 15px;">me</a>
+        <a href="writings.html" style="margin-right: 15px;">writings</a>
+        <a href="read.html" style="margin-right: 15px; color: #88C0D0;">read</a>
+    </nav>
+    
+    <main>
+        <h1>reading list</h1>
+        
+        <div id="loading">Loading reading list...</div>
+        <ul id="reading-list" class="reading-list"></ul>
+    </main>
+    
+    <footer>
+        © 2025 - Built with infant tears
+    </footer>
+
+    <script src="read.js"></script>
+</body>
+</html>

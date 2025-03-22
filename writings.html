@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>basu / writings</title>
+    <style>
+        body {
+            font-family: "Courier New", Courier, monospace;
+            line-height: 1.6;
+            color: #E5E9F0;
+            background-color: #2E3440;
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        header {
+            margin-bottom: 40px;
+            border-bottom: 1px solid #434C5E;
+            padding-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            font-weight: normal;
+            margin-bottom: 0.5rem;
+            color: #88C0D0;
+        }
+        
+        h2 {
+            color: #88C0D0;
+            font-weight: normal;
+            border-bottom: 1px solid #434C5E;
+            padding-bottom: 5px;
+        }
+        
+        p {
+            margin-bottom: 1.5rem;
+        }
+        
+        a {
+            color: #81A1C1;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            color: #A3BE8C;
+            text-decoration: underline;
+        }
+        
+        .links {
+            margin-bottom: 30px;
+        }
+        
+        .links a {
+            margin-right: 15px;
+        }
+        
+        .blog-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .blog-item {
+            margin-bottom: 2rem;
+            position: relative;
+            padding-left: 25px;
+            border-bottom: 1px dotted #434C5E;
+            padding-bottom: 1.5rem;
+        }
+        
+        .blog-item:last-child {
+            border-bottom: none;
+        }
+        
+        .blog-item::before {
+            content: ">";
+            position: absolute;
+            left: 0;
+            color: #88C0D0;
+        }
+        
+        .blog-date {
+            color: #4C566A;
+            font-size: 0.9rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .blog-title {
+            font-size: 1.25rem;
+            color: #A3BE8C;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        .blog-desc {
+            margin-bottom: 0.75rem;
+        }
+        
+        .read-more {
+            color: #81A1C1;
+            font-size: 0.9rem;
+        }
+        
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .tag {
+            background-color: #434C5E;
+            color: #88C0D0;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        footer {
+            margin-top: 60px;
+            color: #4C566A;
+            font-size: 0.9rem;
+            border-top: 1px solid #434C5E;
+            padding-top: 20px;
+        }
+        
+        .loading {
+            color: #4C566A;
+            font-style: italic;
+        }
+        .post-item {
+        margin-bottom: 1.5rem;
+        }
+
+        .post-title {
+        display: block;
+        font-size: 1.1rem;
+        color: #E5E9F0;
+        margin-bottom: 0.2rem;
+        text-decoration: none;
+        }
+
+        .post-title:hover {
+        color: #88C0D0;
+        text-decoration: underline;
+        }
+
+        .post-meta {
+        font-size: 0.85rem;
+        color: #4C566A;
+        }
+
+        .post-tag {
+        color: #88C0D0;
+        text-decoration: none;
+        }
+
+        .post-tag:hover {
+        text-decoration: underline;
+        }
+
+        .error-message {
+        color: #BF616A;
+        font-style: italic;
+        }
+        
+        /* Simple scanlines effect */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                rgba(46, 52, 64, 0) 50%, 
+                rgba(46, 52, 64, 0.25) 50%
+            );
+            background-size: 100% 4px;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0.15;
+        }
+        
+        @media (max-width: 500px) {
+            .blog-item {
+                padding-left: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav style="margin-bottom: 20px; border-bottom: 1px solid #434C5E; padding-bottom: 10px;">
+        <a href="index.html" style="margin-right: 15px; color: #81A1C1; text-decoration: none;">home</a>
+        <a href="me.html" style="margin-right: 15px; color: #81A1C1; text-decoration: none;">me</a>
+        <a href="writings.html" style="margin-right: 15px; color: #88C0D0; text-decoration: none;">writings</a>
+        <a href="read.html" style="margin-right: 15px; color: #81A1C1;">read</a>
+    </nav>
+    
+    <div style="width: 100%; display: flex; justify-content: center; margin: 0 0 20px 0;">
+        <img src="assets/writing.png" alt="Header image" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+    </div>
+    <br>
+    <main>
+        <ul id="posts-list" class="blog-list">
+            <li class="loading">Loading posts...</li>
+        </ul>
+    </main>
+    
+    <footer>
+        © 2025 - Built with infant tears
+    </footer>
+    
+    <!-- Client-side libraries from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+    <script src="blog.js"></script>
+    
+    <!-- MathJax for LaTeX support in post descriptions -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+    <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']],
+        processEscapes: true
+      }
+    };
+    </script>
+</body>
+</html>

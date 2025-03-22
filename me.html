@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>basu / me</title>
+    <style>
+        body {
+            font-family: "Courier New", Courier, monospace;
+            line-height: 1.6;
+            color: #E5E9F0;
+            background-color: #2E3440;
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            font-weight: normal;
+            margin-bottom: 0.5rem;
+            color: #88C0D0;
+        }
+        
+        h2 {
+            color: #88C0D0;
+            font-weight: normal;
+            border-bottom: 1px solid #434C5E;
+            padding-bottom: 5px;
+        }
+        
+        p {
+            margin-bottom: 1.5rem;
+        }
+        
+        a {
+            color: #81A1C1;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            color: #A3BE8C;
+            text-decoration: underline;
+        }
+        
+        .links {
+            margin-bottom: 30px;
+        }
+        
+        .links a {
+            margin-right: 15px;
+        }
+        
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .skill-tag {
+            background-color: #434C5E;
+            color: #88C0D0;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        .timeline {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .timeline li {
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-left: 25px;
+        }
+        
+        .timeline li::before {
+            content: ">";
+            position: absolute;
+            left: 0;
+            color: #88C0D0;
+        }
+        
+        .date {
+            color: #4C566A;
+            min-width: 110px;
+            display: inline-block;
+        }
+        
+        .highlight {
+            color: #A3BE8C;
+        }
+        
+        footer {
+            margin-top: 60px;
+            color: #4C566A;
+            font-size: 0.9rem;
+            border-top: 1px solid #434C5E;
+            padding-top: 20px;
+        }
+        
+        /* Simple scanlines effect */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                rgba(46, 52, 64, 0) 50%, 
+                rgba(46, 52, 64, 0.25) 50%
+            );
+            background-size: 100% 4px;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0.15;
+        }
+        
+        @media (max-width: 500px) {
+            .timeline li {
+                flex-direction: column;
+            }
+            
+            .date {
+                margin-bottom: 0.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav style="margin-bottom: 20px; border-bottom: 1px solid #434C5E; padding-bottom: 10px;">
+        <a href="index.html" style="margin-right: 15px; color: #81A1C1; text-decoration: none;">home</a>
+        <a href="me.html" style="margin-right: 15px; color: #88C0D0; text-decoration: none;">me</a>
+        <a href="writings.html" style="margin-right: 15px; color: #81A1C1; text-decoration: none;">writings</a>
+        <a href="read.html" style="margin-right: 15px; color: #81A1C1;">read</a>
+    </nav>
+
+    <div style="width: 100%; display: flex; justify-content: center; margin: 0 0 20px 0;">
+        <img src="assets/about.png" alt="Header image" style="max-width: 100%; display: block; margin: 0 auto;">
+    </div>
+
+    <div>
+        <p style="padding-top: 10px;">
+            a guy from india passionate about compilers, functional programming, cpu optimizations & computer architecture.<br><br>
+            currently i work at a deep tech startup, where i'm building an open-source static analysis tool. in my spare time, i tinker with software, read technical papers & articles, or self-study math. beyond tech, i enjoy curating playlists and reading manga.
+        </p>
+    </div>
+    <ul>
+        <li>github&nbsp;&nbsp;<a href="https://github.com/mashybasker" target="_blank">@mashybasker</a></li>
+        <li>x/twt&nbsp;&nbsp;&nbsp;<a href="https://x.com/basum" target="_blank">@basum</a></li>
+        <li>email&nbsp;&nbsp;&nbsp;<a href="mailto:basumaharshi10@gmail.com" target="_blank">@basumaharshi10</a></li>
+    </ul>
+    <div>
+
+    </div>
+
+    <footer>
+        © 2025 - Built with infant tears
+    </footer>
+</body>
+</html>

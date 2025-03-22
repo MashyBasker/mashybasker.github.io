@@ -1,0 +1,16 @@
+[
+  {
+    "title": "taste is eating silicon valley",
+    "url": "https://www.workingtheorys.com/p/taste-is-eating-silicon-valley",
+    "date": "2025-03-22",
+    "author": "Anu Atluru",
+    "description": "In the early 2010s, the ability to write software was seen as a godly skill - one that could revolutionize industries. But today, coding is just that: a skill. Complexities have decreased, and AI has pushed it to its maximum. The true differentiator is no longer the ability to code, but taste - the intuition for design, the brand aesthetic, and the experience it creates for users. In a world of scarcity, we treasure tools. In a world of abundance, we treasure taste."
+  },
+  {
+    "title": "why i attack",
+    "url": "https://nicholas.carlini.com/writing/2024/why-i-attack.html",
+    "date": "2025-03-22",
+    "author": "Nicholas Carlini",
+    "description": "Software attackers are mostly frowned upon - albeit due to the nature of their work, which involves breaking what someone has built. However, a responsible, ethical adversary finding vulnerabilities in your software is far better than a malicious actor exploiting them. In this post, Nicholas Carlini, who researches neural networks from an adversarial perspective, discusses about why he attacks systems and how to responsibly disclose vulnerabilities to prevent disastrous consequences."
+  }
+]

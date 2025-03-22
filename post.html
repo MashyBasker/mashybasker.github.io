@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />    
+    <title>basu / Blog Post</title>
+    <!-- Nord theme for syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/nord.min.css">
+    
+    <!-- MathJax configuration -->
+    <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+      }
+    };
+    </script>
+    <style>
+        body {
+            font-family: "Courier New", Courier, monospace;
+            line-height: 1.6;
+            color: #E5E9F0;
+            background-color: #2E3440;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        header {
+            margin-bottom: 40px;
+            border-bottom: 1px solid #434C5E;
+            padding-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            font-weight: normal;
+            margin-bottom: 0.5rem;
+            color: #88C0D0;
+        }
+        
+        h2, h3, h4, h5, h6 {
+            color: #88C0D0;
+            font-weight: normal;
+            margin-top: 2rem;
+            border-bottom: 1px solid #434C5E;
+            padding-bottom: 5px;
+        }
+        
+        p {
+            margin-bottom: 1.5rem;
+        }
+        
+        a {
+            color: #81A1C1;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            color: #A3BE8C;
+            text-decoration: underline;
+        }
+        
+        blockquote {
+            border-left: 4px solid #4C566A;
+            margin-left: 0;
+            padding-left: 20px;
+            font-style: italic;
+            color: #D8DEE9;
+        }
+        
+        code {
+            font-family: "Courier New", Courier, monospace;
+            background-color: #3B4252;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        
+        pre {
+            background-color: #3B4252;
+            padding: 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+        }
+        
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+        
+        ul, ol {
+            margin-bottom: 1.5rem;
+            padding-left: 25px;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin: 1.5rem 0;
+        }
+        
+        .post-date {
+            color: #4C566A;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+        
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 2rem 0;
+        }
+        
+        .tag {
+            background-color: #434C5E;
+            color: #88C0D0;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+        }
+        
+        footer {
+            margin-top: 60px;
+            color: #4C566A;
+            font-size: 0.9rem;
+            border-top: 1px solid #434C5E;
+            padding-top: 20px;
+        }
+        
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #434C5E;
+        }
+        
+        th {
+            background-color: #3B4252;
+            color: #88C0D0;
+        }
+        
+        tr:hover {
+            background-color: #3B4252;
+        }
+        
+        /* Simple scanlines effect */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                rgba(46, 52, 64, 0) 50%, 
+                rgba(46, 52, 64, 0.25) 50%
+            );
+            background-size: 100% 4px;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0.15;
+        }
+        
+        @media (max-width: 500px) {
+            pre {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav style="margin-bottom: 20px; border-bottom: 1px solid #434C5E; padding-bottom: 10px;">
+        <a href="index.html" style="margin-right: 15px; color: #81A1C1; text-decoration: none;">home</a>
+        <a href="me.html" style="margin-right: 15px; color: #81A1C1; text-decoration: none;">me</a>
+        <a href="writings.html" style="margin-right: 15px; color: #81A1C1; text-decoration: none;">writings</a>
+        <a href="read.html" style="margin-right: 15px; color: #81A1C1;">read</a>
+    </nav>
+    <main>
+        <article>
+            <h1 id="post-title">Loading...</h1>
+            <span id="post-date" class="post-date"></span>
+            
+            <div id="post-content" class="post-content">
+                <p>Loading post content...</p>
+            </div>
+            
+            <div id="post-tags" class="tags">
+                <!-- Tags will be inserted here by JavaScript -->
+            </div>
+        </article>
+    </main>
+    
+    <footer>
+        © 2025 - Built with infant tears
+    </footer>
+    
+    <!-- Client-side libraries from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    
+    <!-- MathJax for LaTeX support -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+    
+    <script src="blog.js"></script>
+</body>
+</html>

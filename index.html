@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>basu / home</title>
+    <style>
+        body {
+            font-family: "Courier New", Courier, monospace;
+            line-height: 1.6;
+            color: #E5E9F0;
+            background-color: #2E3440;
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        header {
+            margin-bottom: 40px;
+            border-bottom: 1px solid #434C5E;
+            padding-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            font-weight: normal;
+            margin-bottom: 0.5rem;
+            color: #88C0D0;
+        }
+        
+        h2 {
+            color: #88C0D0;
+            font-weight: normal;
+            border-bottom: 1px solid #434C5E;
+            padding-bottom: 5px;
+        }
+        
+        p {
+            margin-bottom: 1.5rem;
+        }
+        
+        a {
+            color: #81A1C1;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            color: #A3BE8C;
+            text-decoration: underline;
+        }
+        
+        .links {
+            margin-bottom: 30px;
+        }
+        
+        .links a {
+            margin-right: 15px;
+        }
+        
+        .posts {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .posts li {
+            margin-bottom: 1rem;
+            display: flex;
+        }
+        
+        .date {
+            color: #4C566A;
+            min-width: 110px;
+            display: inline-block;
+        }
+        
+        footer {
+            margin-top: 60px;
+            color: #4C566A;
+            font-size: 0.9rem;
+            border-top: 1px solid #434C5E;
+            padding-top: 20px;
+        }
+
+        .blog-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .blog-item {
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-left: 25px;
+            display: flex;
+            flex-direction: column;
+            border-bottom: 1px dotted #434C5E;
+            padding-bottom: 1rem;
+        }
+
+        .blog-item:last-child {
+            border-bottom: none;
+        }
+
+        .blog-item::before {
+            content: ">";
+            position: absolute;
+            left: 0;
+            color: #88C0D0;
+        }
+
+        .blog-date {
+            color: #4C566A;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .blog-title {
+            font-size: 1.1rem;
+            color: #A3BE8C;
+            margin-bottom: 0.5rem;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background-color: #434C5E;
+            color: #88C0D0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .post-item {
+             margin-bottom: 1.5rem;
+        }
+
+        .post-title {
+            display: block;
+            font-size: 1.1rem;
+            color: #E5E9F0;
+            margin-bottom: 0.2rem;
+            text-decoration: none;
+        }
+
+        .post-title:hover {
+            color: #88C0D0;
+            text-decoration: underline;
+        }
+
+        .post-meta {
+            font-size: 0.85rem;
+            color: #4C566A;
+        }
+
+        .post-tag {
+        color: #88C0D0;
+        text-decoration: none;
+        }
+
+        .post-tag:hover {
+        text-decoration: underline;
+        }
+        
+        /* Removed cursor effect */
+        
+        /* Simple scanlines effect */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                rgba(46, 52, 64, 0) 50%, 
+                rgba(46, 52, 64, 0.25) 50%
+            );
+            background-size: 100% 4px;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0.15;
+        }
+        
+        @media (max-width: 500px) {
+            .posts li {
+                flex-direction: column;
+            }
+            
+            .date {
+                margin-bottom: 0.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Add this right after the <body> tag and before the <header> tag -->
+<nav style="margin-bottom: 20px; border-bottom: 1px solid #434C5E; padding-bottom: 10px;">
+    <a href="index.html" style="margin-right: 15px; color: #88C0D0; text-decoration: none;">home</a>
+    <a href="me.html" style="margin-right: 15px; color: #81A1C1; text-decoration: none;">me</a>
+    <a href="writings.html" style="margin-right: 15px; color: #81A1C1; text-decoration: none;">writings</a>
+    <a href="read.html" style="margin-right: 15px; color: #81A1C1;">read</a>
+</nav>
+
+    <div style="width: 100%; display: flex; justify-content: center; margin: 0 0 20px 0;">
+        <img src="assets/header.png" alt="Header image" style="max-width: 100%; height: auto; display: block; margin: 0 auto;   ">
+    </div>
+
+    
+    <div style="padding-top: 10px;">
+        <p>
+            hi! i'm maharshi. in this site, you'll find information about me, my work and my interests. check <a href="me.html">me</a> out for a longer introduction.
+        </p>
+    </div>
+
+
+    <section class="latest-writings">
+        
+        <ul id="latest-posts" class="blog-list">
+            <li class="loading">Loading latest posts...</li>
+        </ul>
+        
+        <div class="view-all">
+          <a href="./writings.html" class="view-all-link">View all writings →</a>
+        </div>
+      </section>
+      
+      <style>
+        .latest-writings {
+          margin: 40px 0;
+          padding-top: 20px;
+          border-top: 1px solid #434C5E;
+        }
+        
+        .latest-writings h2 {
+          color: #88C0D0;
+          font-weight: normal;
+          margin-bottom: 20px;
+          border-bottom: 1px solid #434C5E;
+          padding-bottom: 5px;
+        }
+        
+        .view-all {
+          margin-top: 20px;
+          text-align: right;
+        }
+        
+        .view-all-link {
+          color: #81A1C1;
+          text-decoration: none;
+          font-size: 0.9rem;
+        }
+        
+        .view-all-link:hover {
+          color: #A3BE8C;
+          text-decoration: underline;
+        }
+      </style>
+    
+    <footer>
+        © 2025 - Built with Yeti's blood
+    </footer>
+    <script src="./blog.js"></script>
+</body>
+</html>
