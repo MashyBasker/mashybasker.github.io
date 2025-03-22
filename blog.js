@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
       console.log('Loading post content for:', postSlug);
       
       // Load the markdown file
-      const response = await fetch(`posts/${postSlug}.md`);
+      const response = await fetch(`/posts/${postSlug}.md`);
       if (!response.ok) {
         throw new Error(`Post not found: ${response.status}`);
       }
@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Fetch posts listing
   if (postsListElement || latestPostsElement) {
-    fetch('posts/index.json')
+    fetch('/posts/index.json')
       .then(response => response.json())
       .then(data => {
         console.log('Posts loaded:', data.length);
@@ -221,7 +221,7 @@ async function loadSinglePost() {
 
   try {
     // Load the markdown file with cache busting
-    const response = await fetch(`posts/${postFile}.md?t=${new Date().getTime()}`);
+    const response = await fetch(`/posts/${postFile}.md?t=${new Date().getTime()}`);
     if (!response.ok) {
       throw new Error(`Post not found: ${response.status} ${response.statusText}`);
     }
@@ -294,7 +294,7 @@ async function loadSinglePost() {
 async function loadAllPosts() {
   try {
     // Load the posts index with cache busting
-    const response = await fetch('posts/index.json?t=' + new Date().getTime());
+    const response = await fetch('/posts/index.json?t=' + new Date().getTime());
     if (!response.ok) {
       throw new Error(`Could not load posts index: ${response.status} ${response.statusText}`);
     }
@@ -400,7 +400,7 @@ async function loadLatestPosts(containerId, limit = 3) {
   
   try {
     console.log('Attempting to load posts index...');
-    const response = await fetch('posts/index.json');
+    const response = await fetch('/posts/index.json');
     
     if (!response.ok) {
       throw new Error(`Could not load posts index: ${response.status}`);
