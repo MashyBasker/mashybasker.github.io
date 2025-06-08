@@ -12,6 +12,10 @@ enableEmoji: true
 pygmentsUseClasses: true
 mainsections: ["writings"]
 
+caches:
+  images:
+    dir: :cacheDir/images
+
 pagination:
   disableAliases: false
   pagerSize: 5
