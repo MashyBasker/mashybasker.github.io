@@ -1,0 +1,85 @@
+baseURL: https://mashybasker.github.io
+languageCode: en-us
+title: basum
+theme: ["PaperMod"]
+
+enableInlineShortcodes: true
+enableRobotsTXT: true
+buildDrafts: false
+buildFuture: false
+buildExpired: false
+enableEmoji: true
+pygmentsUseClasses: true
+mainsections: ["writings"]
+
+pagination:
+  disableAliases: false
+  pagerSize: 5
+
+languages:
+  en:
+    languageName: "English"
+    weight: 1
+    taxonomies:
+      category: categories
+      tag: tags
+      series: series
+    menu:
+      main:
+        - name: Home
+          url: /
+          weight: 10
+        - name: Writings
+          url: /writings
+          weight: 10
+        - name: CV
+          url: /resume.pdf
+
+
+params:
+  env: production # to enable google analytics, opengraph, twitter-cards and schema.
+  description: "Theme PaperMod - https://github.com/adityatelange/hugo-PaperMod"
+  author: Theme PaperMod
+  # author: ["Me", "You"] # multiple authors
+
+  defaultTheme: auto
+  # disableThemeToggle: true
+  ShowShareButtons: true
+  ShowReadingTime: true
+  # disableSpecial1stPost: true
+  displayFullLangName: true
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
+  ShowCodeCopyButtons: true
+  ShowRssButtonInSectionTermList: true
+  ShowAllPagesInArchive: true
+  ShowPageNums: true
+  ShowToc: true
+  math: true
+  profileMode:
+    enabled: false
+
+
+  homeInfoParams:
+    enabled: false
+    Title: "Prelude"
+    Content: >
+
+      - Hi! I'm Maharshi -- an engineer.
+
+      -
+
+      - I devote my time to systems programming, compilers, functional programming and anything at the intersection of CS and Math. Lately, I've been into PLT, software optimization and [Zig](https://ziglang.org/).
+
+      -
+
+      - Previously, I worked at [Inria](https://coccinelle.gitlabpages.inria.fr/website/) and [RISC-V](https://riscv.org/) (LFX '24), and I'm currently interning at [DeepSource](https://deepsource.com).
+
+      
+
+      - Outside of work, I enjoy reading manga and listening to music.
+
+      - 
+
+      - I'm always up for a chat or discussion. Feel free to reach out on [X](https://x.com/basum) or drop me an [e-mail](mailto:basumaharshi10@gmail.com)
+
