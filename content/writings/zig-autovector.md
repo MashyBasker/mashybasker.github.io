@@ -1,7 +1,7 @@
 ---
 author: ["Maharshi Basu"]
 title: "Triggering Auto-Vectorization in Zig Standard Library method"
-date: "2025-06-07"
+date: "2025-06-08"
 description: "An exploration of how LLVM’s auto-vectorization can be used to optimize Zig’s std.mem.allEqual, and the surprising performance implications that follow."
 summary: "An exploration of how LLVM’s auto-vectorization can be used to optimize Zig’s std.mem.allEqual, and the surprising performance implications that follow."
 tags: ["zig", "llvm", "simd"]
