@@ -11,13 +11,13 @@ TocOpen: true
 
 ## Introduction
 
-Recently, I read [this post](https://sivukhin.github.io/find-slice-element-position-in-rust.html) by Nikita Sivukhin. In it, they refactor a `find` method to locate the position of an element in a slice. The optimization takes advantage of LLVM’s auto-vectorization to improve performance.
+I read [this post](https://sivukhin.github.io/find-slice-element-position-in-rust.html) recently by Nikita Sivukhin. In it, they refactor a `find` method to locate the position of an element in a slice. The optimization takes advantage of LLVM’s auto-vectorization to improve performance.
 
-After reading the blog, I decided to apply the techniques discussed to the `std.mem.allEqual` function in Zig’s standard library to investigate how vectorization could affect its performance.
+I decided to apply the techniques discussed to the `std.mem.allEqual` function in Zig’s standard library to investigate how vectorization could affect its performance.
 
 ## The Standard Library
 
-The `allEqual` function is defined as
+The `allEqual` method is defined as
 
 > Returns true if all elements in a slice are equal to the scalar value provided
 
@@ -70,7 +70,7 @@ allEqual:
 <br><br>
 However, this approach lacks vectorization. Why doesn’t LLVM apply it? To understand what might be preventing vectorization, we can check the [LLVM optimization remarks](https://llvm.org/docs/Remarks.html) for clues.
 
-Unlike Rust, Zig doesn't support passing arbitrary LLVM flags such as `-pass-remarks`, `-pass-remarks-missed`, or `-pass-remarks-analysis` directly. To work around this, we first emit the LLVM IR using the `-emit-llvm-ir` flag to generate a `.ll` file. We can then use the [`llvm-opt`](https://llvm.org/docs/CommandGuide/opt.html) tool on this file to obtain the optimization remarks.
+Unlike Rust, Zig doesn't support passing arbitrary LLVM flags such as `-pass-remarks`, `-pass-remarks-missed`, or `-pass-remarks-analysis` directly. To work around this, we need to first emit the LLVM IR using the `-emit-llvm-ir` flag to generate a `.ll` file. Then use the [`llvm-opt`](https://llvm.org/docs/CommandGuide/opt.html) tool on this file to generate the optimization remarks.
 
 ### Setting up the development environment
 
@@ -92,7 +92,7 @@ Finally execute `devenv shell` to build the environment.
 
 ### Investigation
 
-The following code is put in a `test.zig` file.
+We put the following slightly modified code in a `test.zig` file.
 
 ```zig
 const std = @import("std");
@@ -102,7 +102,7 @@ export fn allEqual_std(data: [*]const u8, len: usize, target: u8) bool {
 }
 ```
 
-The `export` keyword is needed, otherwise LLVM's dead code elimination will ignore this function as it is actually never called.
+The `export` keyword is needed, otherwise LLVM's dead code elimination will ignore this function as its never actually called.
 
 Executing:
 
@@ -162,7 +162,7 @@ This looks correct, now let's check the compiler output and the LLVM remarks.
         ...
 ```
 
-Unfortunately, there still isn't any SIMD [output](https://godbolt.org/z/7d8bff8fK). However, the loop is unrolled, and the compiler generates branchless code with no jump instructions at all. The following remarks are generated:
+Unfortunately, there still isn't any SIMD [output](https://godbolt.org/z/7d8bff8fK). However, the loop does get unrolled, and the compiler generates branchless code with no jump instructions. The following remarks are generated:
 
 ```shell
 remark: w.zig:11:15: loop not vectorized: value that could not be identified as reduction is used outside the loop
@@ -301,4 +301,8 @@ Benchmarking the stdlib implementation against the new implementation that trigg
 The auto-vectorized implementation performs well only when all elements match the scalar value or the first mismatch is near the end. If there's a mismatch early on, the early-stopping version is faster. It returns as soon as a mismatch is found, while the vectorized version still scans the entire slice to count all mismatches.
 
 
+## References
 
+- [Auto-Vectorization in LLVM](https://llvm.org/docs/Vectorizers.html)
+- [Cornell Virtual Workshop - Data Dependencies](https://cvw.cac.cornell.edu/vector/coding/data-dependencies)
+- [Find element’s position in Rust – 9 times faster! - Nikita Sivukhin](https://sivukhin.github.io/find-slice-element-position-in-rust.html#Find-element-s-position-in-Rust-9-times-faster)
