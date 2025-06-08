@@ -272,28 +272,28 @@ Benchmarking the stdlib implementation against the new implementation that trigg
 3. Only the last element does not match the target.
 
 
-**1. All elements equal to the target**
+***1. All elements equal to the target***
 
-| Method            | Median(ns/call) | Min(ns/call) | Max(ns/call) | Mean(ns/call) | Throughput(elem/sec) |
-| ----------------- | --------------- | ------------ | ------------ | ------------- | -------------------- |
-| std.mem.allEqual  | 581131          | 579660       | 582292       | 580878        | 7e9                  |
-| allEqual_no_early | 192468          | 191289       | 195401       | 192378        | 2e10                 |
-
-
-**2. Only the first element does not match the target.**
-
-| Method            | Median(ns/call) | Min(ns/call) | Max(ns/call) | Mean(ns/call) | Throughput(elem/sec) |
-| ----------------- | --------------- | ------------ | ------------ | ------------- | -------------------- |
-| std.mem.allEqual  | 0               | 0            | 0            | 0             | inf                  |
-| allEqual_no_early | 194103          | 192374       | 204662       | 196067        | 2e10                 |
+| Method            | Median(ns/call) | Mean(ns/call) | Throughput(elem/sec) |
+| ----------------- | --------------- | ------------ | ------------ |
+| std.mem.allEqual  | 581131          | 580878       | 7e9                  |
+| allEqual_no_early | 192468          | 192378       | 2e10                 |
 
 
-**3. Only the last element does not match the target**
+***2. Only the first element does not match the target.***
 
-| Method            | Median(ns/call) | Min(ns/call) | Max(ns/call) | Mean(ns/call) | Throughput(elem/sec) |
-| ----------------- | --------------- | ------------ | ------------ | ------------- | -------------------- |
-| std.mem.allEqual  | 557238          | 555857       | 559801       | 557433        | 7e9                  |
-| allEqual_no_early | 194800          | 192834       | 195825       | 194474        | 2e10                 |
+| Method            | Median(ns/call) | Min(ns/call) | Throughput(elem/sec) |
+| ----------------- | --------------- | ------------ | ------------|
+| std.mem.allEqual  | 0               | 0            | inf                  |
+| allEqual_no_early | 194103          | 196067       | 2e10                 |
+
+
+***3. Only the last element does not match the target***
+
+| Method            | Median(ns/call) | Min(ns/call) | Throughput(elem/sec) |
+| ----------------- | --------------- | ------------ | ------------ |
+| std.mem.allEqual  | 557238          | 557433       | 7e9                  |
+| allEqual_no_early | 194800          | 194474       | 2e10                 |
 
 
 ## Conclusion
