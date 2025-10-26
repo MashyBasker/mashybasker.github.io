@@ -4,14 +4,14 @@
     <title>Llvm on basum</title>
     <link>http://localhost:1313/tags/llvm/</link>
     <description>Recent content in Llvm on basum</description>
-    <generator>Hugo -- 0.146.7</generator>
+    <generator>Hugo -- 0.147.9</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 07 Jun 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 08 Jun 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/llvm/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Triggering Auto-Vectorization in Zig Standard Library method</title>
       <link>http://localhost:1313/writings/zig-autovector/</link>
-      <pubDate>Sat, 07 Jun 2025 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 08 Jun 2025 00:00:00 +0000</pubDate>
       <guid>http://localhost:1313/writings/zig-autovector/</guid>
       <description>An exploration of how LLVM’s auto-vectorization can be used to optimize Zig’s std.mem.allEqual, and the surprising performance implications that follow.</description>
     </item>

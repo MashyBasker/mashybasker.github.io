@@ -4,7 +4,7 @@
     <title>Categories on basum</title>
     <link>http://localhost:1313/categories/</link>
     <description>Recent content in Categories on basum</description>
-    <generator>Hugo -- 0.146.7</generator>
+    <generator>Hugo -- 0.147.9</generator>
     <language>en</language>
     <atom:link href="http://localhost:1313/categories/index.xml" rel="self" type="application/rss+xml" />
   </channel>
