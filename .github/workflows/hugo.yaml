@@ -6,7 +6,8 @@ on:
   push:
     branches:
       - main
-
+  schedule:
+    - cron: "0 0 * * *"
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -53,7 +54,7 @@ jobs:
 
       - name: Fetch Resume
         run: |
-            curl -L -o content/resume.pdf "https://raw.githubusercontent.com/mashybasker/resume/master/Maharshi_Basu_Resume.pdf"
+          curl -L -o content/resume.pdf "https://raw.githubusercontent.com/mashybasker/resume/master/Maharshi_Basu_Resume.pdf"
 
       - name: Install Node.js dependencies
         run: "[[ -f package-lock.json || -f npm-shrinkwrap.json ]] && npm ci || true"
@@ -64,8 +65,7 @@ jobs:
           path: |
             ${{ runner.temp }}/hugo_cache
           key: hugo-${{ github.run_id }}
-          restore-keys:
-            hugo-
+          restore-keys: hugo-
       - name: Configure Git
         run: git config core.quotepath false
       - name: Build with Hugo
