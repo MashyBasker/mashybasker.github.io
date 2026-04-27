@@ -13,6 +13,6 @@ site_paths:
   - label: Index
     path: /
   - label: Writings
-    path: /Writings
+    path: /writings
   - label: CV
     path: /cv.pdf
