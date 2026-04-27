@@ -8,3 +8,11 @@ footer_links:
     url: https://github.com/mashybaskerr
   - label: x/twtr
     url: https://x.com/basum
+
+site_paths:
+  - label: Index
+    path: /
+  - label: Writings
+    path: /Writings
+  - label: CV
+    path: /cv.pdf
