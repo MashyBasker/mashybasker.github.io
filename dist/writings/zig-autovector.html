@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Triggering Auto-Vectorization in Zig Standard Library method</title>
+  <link rel="stylesheet" href="/reset.css">
+  <link rel="stylesheet" href="/index.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/base16/grayscale-light.min.css">
+  <link rel="stylesheet" media="(prefers-color-scheme: dark)" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/base16/grayscale-dark.min.css">
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+    main { flex: 1; }
+    header { display: flex; justify-content: flex-end; align-items: center; margin-bottom: calc(var(--line-height) * 2); }
+    nav { display: flex; gap: 2ch; margin: 0; }
+    nav a { margin: 0; text-decoration: none; }
+    nav a.active { text-decoration: underline; text-decoration-thickness: var(--border-thickness); }
+    .post-cards { display: flex; flex-direction: column; gap: var(--line-height); margin: 0; padding: 0; }
+    .post-card { display: flex; flex-direction: column; gap: calc(var(--line-height) / 2); border: var(--border-thickness) solid var(--text-color); padding: calc(var(--line-height) - var(--border-thickness)) 1ch; text-decoration: none; margin: 0; }
+    .post-card:hover { background: var(--background-color-alt); }
+    .post-card-title { font-weight: var(--font-weight-bold); margin: 0; }
+    .post-card-date { color: var(--text-color-alt); margin: 0; font-size: 0.875rem; }
+  </style>
+</head>
+<body>
+
+
+<header>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/writings/">Writings</a>
+  </nav>
+</header>
+
+
+<main>
+<article>
+  <h1>Triggering Auto-Vectorization in Zig Standard Library method</h1>
+  <p class="date">2025-06-08</p>
+  <h2>Introduction</h2>
+<p>I read <a href="https://sivukhin.github.io/find-slice-element-position-in-rust.html">this post</a> recently by Nikita Sivukhin. In it, they refactor a <code>find</code> method to locate the position of an element in a slice. The optimization takes advantage of LLVM’s auto-vectorization to improve performance.</p>
+<p>I decided to apply the techniques discussed to the <code>std.mem.allEqual</code> function in Zig’s standard library to investigate how vectorization could affect its performance.</p>
+<h2>The Standard Library</h2>
+<p>The <code>allEqual</code> method is defined as</p>
+<blockquote>
+<p>Returns true if all elements in a slice are equal to the scalar value provided</p>
+</blockquote>
+<p>With this pretty simple source code:</p>
+<pre><code class="language-zig">pub fn allEqual(comptime T: type, slice: []const T, scalar: T) bool {
+    for (slice) |item| {
+        if (item != scalar) return false;
+    }
+    return true;
+}
+</code></pre>
+<p><!-- raw HTML omitted --><!-- raw HTML omitted --></p>
+<p>Putting this on <a href="https://godbolt.org/z/zqczGb13e">godbolt</a> using Zig 0.14.1 and the flags <code>-O ReleaseFast -target x86_64-linux -mcpu=native</code> gives the compiler output:</p>
+<p><!-- raw HTML omitted --><!-- raw HTML omitted --></p>
+<pre><code class="language-asm">allEqual:
+        push    rbp
+        mov     rbp, rsp
+        test    rsi, rsi
+        je      .LBB0_1
+        cmp     dword ptr [rdi], edx
+        jne     .LBB0_3
+        mov     ecx, 1
+.LBB0_7:
+        mov     rax, rcx
+        cmp     rsi, rcx
+        je      .LBB0_4
+        lea     rcx, [rax + 1]
+        cmp     dword ptr [rdi + 4*rax], edx
+        je      .LBB0_7
+.LBB0_4:
+        cmp     rax, rsi
+        setae   al
+        pop     rbp
+        ret
+.LBB0_1:
+        mov     al, 1
+        pop     rbp
+        ret
+.LBB0_3:
+        xor     eax, eax
+        pop     rbp
+        ret
+</code></pre>
+<p><!-- raw HTML omitted --><!-- raw HTML omitted -->
+However, this approach lacks vectorization. Why doesn’t LLVM apply it? To understand what might be preventing vectorization, we can check the <a href="https://llvm.org/docs/Remarks.html">LLVM optimization remarks</a> for clues.</p>
+<p>Unlike Rust, Zig doesn’t support passing arbitrary LLVM flags such as <code>-pass-remarks</code>, <code>-pass-remarks-missed</code>, or <code>-pass-remarks-analysis</code> directly. To work around this, we need to first emit the LLVM IR using the <code>-emit-llvm-ir</code> flag to generate a <code>.ll</code> file. Then use the <a href="https://llvm.org/docs/CommandGuide/opt.html"><code>llvm-opt</code></a> tool on this file to generate the optimization remarks.</p>
+<h3>Setting up the development environment</h3>
+<p>I used <a href="https://nix.dev/">Nix</a> with <a href="https://devenv.sh/">Devenv</a> to set up the environment. Just run <code>devenv init</code> in your project directory and configure the <code>devenv.nix</code> file as needed:</p>
+<pre><code class="language-console">{ pkgs, lib, config, inputs, ... }:
+
+{
+  languages.zig.enable = true;
+  
+  packages = with pkgs; [
+        llvmPackages_19.llvm
+  ];
+}
+</code></pre>
+<p>Finally execute <code>devenv shell</code> to build the environment.</p>
+<h3>Investigation</h3>
+<p>We put the following slightly modified code in a <code>test.zig</code> file.</p>
+<pre><code class="language-zig">const std = @import(&quot;std&quot;);
+
+export fn allEqual_std(data: [*]const u8, len: usize, target: u8) bool {
+    return std.mem.allEqual(u8, data[0..len], target);
+}
+</code></pre>
+<p>The <code>export</code> keyword is needed, otherwise LLVM’s dead code elimination will ignore this function as its never actually called.</p>
+<p>Executing:</p>
+<pre><code class="language-shell">zig build-obj -femit-llvm-ir=test.ll -femit-asm=output.s -O ReleaseFast test.zig &amp;&amp;
+opt -O3 \
+  -pass-remarks=.* \
+  -pass-remarks-missed=.* \
+  -pass-remarks-analysis=.* \
+  test.ll -S -o optimized.ll
+</code></pre>
+<p>The following output is received:</p>
+<pre><code class="language-shell">remarks-analysis=.*   test.ll -S -o optimized.ll
+remark: mem.zig:1191:10: loop not vectorized: could not determine number of loop iterations
+remark: mem.zig:1191:10: loop not vectorized
+</code></pre>
+<p>The remark <code>loop not vectorized: could not determine number of loop iterations</code> means the compiler can’t statically determine how many times the loop will run. Vectorization needs predictable iteration counts to safely group operations into SIMD instructions, which is handled by the <a href="https://llvm.org/docs/Vectorizers.html#loop-vectorizer">LoopVectorizer</a>.</p>
+<p>This can be caused by non-constant loop bounds or early exits. In the original implementation of <code>std.mem.allEqual</code> in the standard library, there’s an early <code>return</code> statement inside the loop. That’s what prevents the loop from being vectorized.</p>
+<h3>Refactor and Restructure</h3>
+<p>To trigger loop vectorization, the implementation must be modified to not use early returns:</p>
+<pre><code class="language-zig">export fn allEqual_no_early_stop(slice: [*]const u8, len: usize, scalar: u8) bool {
+    var m: bool = true;
+    for (slice[0..len]) |item| {
+        m = m and (item == scalar);
+    }
+    return m;
+}
+</code></pre>
+<p>This looks correct, now let’s check the compiler output and the LLVM remarks.</p>
+<pre><code class="language-asm">.LBB0_5:
+        cmp     byte ptr [rdi + r8], dl
+        sete    r9b
+        and     r9b, al
+        cmp     byte ptr [rdi + r8 + 1], dl
+        sete    al
+        cmp     byte ptr [rdi + r8 + 2], dl
+        sete    r10b
+        and     r10b, al
+        and     r10b, r9b
+        cmp     byte ptr [rdi + r8 + 3], dl
+        sete    al
+        cmp     byte ptr [rdi + r8 + 4], dl
+        sete    r9b
+        and     r9b, al
+        ...
+</code></pre>
+<p>Unfortunately, there still isn’t any SIMD <a href="https://godbolt.org/z/7d8bff8fK">output</a>. However, the loop does get unrolled, and the compiler generates branchless code with no jump instructions. The following remarks are generated:</p>
+<pre><code class="language-shell">remark: w.zig:11:15: loop not vectorized: value that could not be identified as reduction is used outside the loop
+remark: w.zig:11:15: loop not vectorized
+remark: w.zig:11:15: loop not vectorized: value that could not be identified as reduction is used outside the loop
+remark: w.zig:11:15: loop not vectorized
+remark: &lt;unknown&gt;:0:0: Cannot SLP vectorize list: vectorization was impossible with available vectorization factors
+remark: w.zig:12:9: Vectorized horizontal reduction with cost -17 and with tree size 3
+remark: w.zig:11:15: unrolled loop by a factor of 8 with run-time trip count
+</code></pre>
+<p>That’s a lot. What do they mean?</p>
+<p><em><strong>The good news</strong></em></p>
+<blockquote>
+<p>Vectorized horizontal reduction with cost -17 and with tree size 3</p>
+</blockquote>
+<p>This refers to a SIMD operation that reduces vector elements into a single scalar value. The <code>-17</code> indicates a profitable optimization according to LLVM’s vectorization cost model. A tree size of <code>3</code> reflects the structure of the operation’s dependency graph and <code>3</code> is its depth.</p>
+<blockquote>
+<p>unrolled loop by a factor of 8 with run-time trip count</p>
+</blockquote>
+<p>This means the LLVM optimizer has applied <em>runtime loop unrolling</em> with an unroll factor of 8 i.e. each iteration of the unrolled loop performs the work of 8 iterations of the original loop.</p>
+<p><em><strong>The bad news</strong></em></p>
+<blockquote>
+<p>loop not vectorized: value that could not be identified as reduction is used outside the loop</p>
+</blockquote>
+<p>This remark is due to something known as <a href="https://cvw.cac.cornell.edu/vector/coding/data-dependencies">Data Dependency Chain</a>. It prevents the compiler from generating vectorized output from the above implementation. I’ll get to it soon.</p>
+<blockquote>
+<p>Cannot SLP vectorize list: vectorization was impossible with available vectorization factors</p>
+</blockquote>
+<p>The <code>SLPVectorizer</code> combines similar independent instructions into vector instructions. This could not be achieved here due to the reduction pattern in the code <code>m = m and (item == scalar)</code>  as well as the dependency chain.</p>
+<h3>Data Dependency Chain</h3>
+<p>In the current implementation there is:</p>
+<pre><code class="language-zig">m = m and (item == scalar);
+</code></pre>
+<p>This is a <em>read-after-write</em> dependency. It is not vectorizable because each iteration depends on the previous value of <code>m</code>. Iteration $N +1$ cannot be computed until the result of iteration $N$ is known.</p>
+<p>A method is needed to check whether all elements of a slice are equal to a given scalar, without introducing data dependencies, and where the result of each iteration is independent of the others.</p>
+<p>The following is a well-known vectorizable pattern that uses summation:</p>
+<pre><code class="language-zig">export fn allEqual_no_early_stop(slice: [*]const u8, len: usize, scalar: u8) bool {
+    var mismatch_count: u32 = 0;
+    for (slice[0..len]) |item| {
+        mismatch_count += @intFromBool(item != scalar);
+    }
+    return mismatch_count == 0;
+}
+</code></pre>
+<p>Here we count the number of mismatches and equate it with zero. If all the elements of the slice are equal to the scalar. The result of the operation <code>@intFromBool(item != scalar)</code> is independent of the other results of the other iterations. So, it is safe to vectorize. Looking at the compiler <a href="https://godbolt.org/z/fqGP1xjbz">output</a>:</p>
+<pre><code class="language-asm">.LBB0_6:
+        vmovq   xmm7, qword ptr [rdi + rcx]
+        vmovq   xmm8, qword ptr [rdi + rcx + 8]
+        vmovq   xmm9, qword ptr [rdi + rcx + 16]
+        vmovq   xmm10, qword ptr [rdi + rcx + 24]
+        vpcmpeqb        xmm7, xmm7, xmm1
+        vpxor   xmm7, xmm7, xmm2
+        vpmovzxbd       ymm7, xmm7
+        vpand   ymm7, ymm7, ymm3
+        vpaddd  ymm0, ymm0, ymm7
+        vpcmpeqb        xmm7, xmm8, xmm1
+        vpxor   xmm7, xmm7, xmm2
+        vpmovzxbd       ymm7, xmm7
+        vpand   ymm7, ymm7, ymm3
+        vpaddd  ymm4, ymm4, ymm7
+        vpcmpeqb        xmm7, xmm9, xmm1
+
+		...
+</code></pre>
+<p>We can see the <a href="https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions">SSE</a> registers, and hence LLVM is successfully able to vectorize the <code>allEqual</code> function.</p>
+<p>We get the following remarks:</p>
+<pre><code>remark: w.zig:4:15: loop not vectorized: vectorization and interleaving are explicitly disabled, or the loop has already been vectorized
+remark: w.zig:4:15: loop not vectorized: vectorization and interleaving are explicitly disabled, or the loop has already been vectorized
+</code></pre>
+<p>This remark can occur due to two reasons:</p>
+<ul>
+<li>
+<p>Vectorization has been explicitly disabled using compiler flags such as <code>-fno-vectorize</code> or <code>-fno-unroll-loops</code>.</p>
+</li>
+<li>
+<p>The loops were already vectorized in an earlier optimization phase, so <code>llvm-opt</code> skips redundant attempts.</p>
+</li>
+</ul>
+<p>Since we did not use any such disabling flags, the remark likely results from the second reason. Indicating that the loops have already been successfully vectorized.</p>
+<h2>Results</h2>
+<p>Benchmarking the stdlib implementation against the new implementation that triggers LLVM’s auto-vectorizer. The benchmark is performed against 3 scenarios:</p>
+<ol>
+<li>All elements of the slice match the target.</li>
+<li>Only the first element does not match the target.</li>
+<li>Only the last element does not match the target.</li>
+</ol>
+<p><em>1. All elements equal to the target</em></p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Median (ns)</th>
+<th>Mean(ns)</th>
+<th>Throughput</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>std.mem.allEqual</code></td>
+<td>581131</td>
+<td>580878</td>
+<td>7e9</td>
+</tr>
+<tr>
+<td><code>allEqual_no_early</code></td>
+<td>192468</td>
+<td>192378</td>
+<td>2e10</td>
+</tr>
+</tbody>
+</table>
+<p><em>2. Only the first element does not match the target.</em></p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Median(ns)</th>
+<th>Min(ns)</th>
+<th>Throughput</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>std.mem.allEqual</code></td>
+<td>0</td>
+<td>0</td>
+<td>inf</td>
+</tr>
+<tr>
+<td><code>allEqual_no_early</code></td>
+<td>194103</td>
+<td>196067</td>
+<td>2e10</td>
+</tr>
+</tbody>
+</table>
+<p><em>3. Only the last element does not match the target</em></p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Median(ns)</th>
+<th>Min(ns)</th>
+<th>Throughput</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>std.mem.allEqual</code></td>
+<td>557238</td>
+<td>557433</td>
+<td>7e9</td>
+</tr>
+<tr>
+<td><code>allEqual_no_early</code></td>
+<td>194800</td>
+<td>194474</td>
+<td>2e10</td>
+</tr>
+</tbody>
+</table>
+<h2>Conclusion</h2>
+<p>The auto-vectorized implementation performs well only when all elements match the scalar value or the first mismatch is near the end. If there’s a mismatch early on, the early-stopping version is faster. It returns as soon as a mismatch is found, while the vectorized version still scans the entire slice to count all mismatches.</p>
+<h2>References</h2>
+<ul>
+<li><a href="https://llvm.org/docs/Vectorizers.html">Auto-Vectorization in LLVM</a></li>
+<li><a href="https://cvw.cac.cornell.edu/vector/coding/data-dependencies">Cornell Virtual Workshop - Data Dependencies</a></li>
+<li><a href="https://sivukhin.github.io/find-slice-element-position-in-rust.html#Find-element-s-position-in-Rust-9-times-faster">Find element’s position in Rust – 9 times faster! - Nikita Sivukhin</a></li>
+</ul>
+
+</article>
+</main>
+
+<footer>
+  <p><a href="https://github.com/mashybaskerr">github</a>	<a href="https://x.com/basum">x/twtr</a></p>
+</footer>
+
+<script src="/index.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlightjs-zig/dist/zig.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/x86asm.min.js"></script>
+<script>hljs.registerAliases(['asm', 'nasm'], {languageName: 'x86asm'}); hljs.highlightAll();</script>
+<script>
+  document.querySelectorAll('nav a').forEach(function(link) {
+    var href = link.getAttribute('href');
+    var path = window.location.pathname;
+    if (href === '/' ? path === '/' : path.startsWith(href)) {
+      link.classList.add('active');
+    }
+  });
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ]
+  })">
+</script>
+</body>
+</html>

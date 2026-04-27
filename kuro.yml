@@ -1,0 +1,10 @@
+name: "My site"
+author: "Maharshi Basu"
+description: "My personal site"
+url: "https://mashybasker.github.io"
+
+footer_links:
+  - label: github
+    url: https://github.com/mashybaskerr
+  - label: x/twtr
+    url: https://x.com/basum
