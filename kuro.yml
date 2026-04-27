@@ -3,13 +3,13 @@ author: "Maharshi Basu"
 description: "My personal site "
 url: "https://mashybasker.github.io"
 
-footer_links:
+socials:
   - label: github
     url: https://github.com/mashybaskerr
   - label: x/twtr
     url: https://x.com/basum
 
-site_paths:
+pages:
   - label: Index
     path: /
   - label: Writings
