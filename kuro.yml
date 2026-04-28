@@ -10,9 +10,13 @@ socials:
     url: https://x.com/basum
 
 pages:
-  - label: Index
+  - label: home
     path: /
-  - label: Writings
+  - label: about
+    path: /about
+  - label: writings
     path: /writings
-  - label: CV
+  - label: work
+    path: /work
+  - label: cv
     path: /cv.pdf
