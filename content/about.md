@@ -14,7 +14,6 @@ This website is built with [kuro](https://github.com/MashyBasker/kuro) -- my own
 
 ## Projects
 
-- Blot: A (WIP) code-editor in Rust.
 - [Zinc](https://github.com/mashybasker/zinc): A minimal compiler in C++ that targets an 8-bit CPU.
 - [Spice](https://github.com/mashybasker/spice): A non-faithful implementation of Space Invaders in Zig.
 - [Kuro](https://github.com/mashybasker/kuro): A static-site generator like Hugo/11ty/Jekyll written in Rust.
