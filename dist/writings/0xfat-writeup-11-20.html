@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>0xfat CTF writeup Levels 11-20</title>
+  <link rel="stylesheet" href="/reset.css">
+  <link rel="stylesheet" href="/index.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/base16/material-lighter.min.css">
+  <link rel="stylesheet" media="(prefers-color-scheme: dark)" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/base16/material-darker.min.css">
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+    main { flex: 1; }
+    header { display: flex; justify-content: flex-end; align-items: center; margin-bottom: calc(var(--line-height) * 2); }
+    nav { display: flex; gap: 2ch; margin: 0; }
+    nav a { margin: 0; }
+  </style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="/">home</a>
+<a href="/about">about</a>
+<a href="/writings">writings</a>
+<a href="/work">work</a>
+<a href="/cv.pdf">cv</a>
+  </nav>
+</header>
+
+<main>
+<article>
+  <h1>0xfat CTF writeup Levels 11-20</h1>
+  <p class="date">2026-09-27</p>
+  <h2>Introduction</h2>
+<p>I’ve recently restarted solving CTF challenges as a way to get into exploit development and security research. I found this website <a href="https://0xf.at/">0xfat.io</a> to solve some basic to and slightly difficult challenges. For some of the problems I needed help, and searched for writeups. I found this <a href="https://n0x.io/posts/0xfat_1/">blog</a>, however it had solutions only for levels 1 to 10.</p>
+<p>I will be adding the solutions from level 11 onwards in this post. Currently I have added till level 20.</p>
+<h3>Level 11</h3>
+<p>The password is given by the output of the following PHP code</p>
+<pre><code class="language-PHP">function pwCheck($password)
+{
+    if($password==date(&quot;d.m.Y&quot;)) //GMT +1
+        return true;
+    else return false;
+}
+</code></pre>
+<p>This is very simple and the password is what the current date is, separated by dots in the format <code>&lt;day&gt;.&lt;month&gt;.&lt;year&gt;</code></p>
+<h3>Level 12</h3>
+<p>The problem states that the flag is the sum of the numbers from 1 to 435. This can be simply computed by using the formula</p>
+<p>$$\sum_{i=1}^{n} = \frac{n \times (n+1)}{2}$$</p>
+<p>This will give us the sum.</p>
+<h3>Level 13</h3>
+<p>Again we are given a piece of PHP code.</p>
+<pre><code class="language-PHP">function pwCheck($username,$password)
+{
+    if(!$username || !$password) return false;
+    if(strlen($username)==$password)
+        return true;
+    else return false;
+}
+</code></pre>
+<p>We just need to provide a username and use the length of the username as password.</p>
+<h3>Level 14</h3>
+<p>This time we are given another code.</p>
+<pre><code class="language-PHP">function pwCheck($guid,$password)
+{
+  if(!$guid || !$password) return false;
+  $users = implode(file('/data/login_info.json'));
+  $json = json_decode($users,true);
+
+  foreach($json['result'] as $data)
+    if($data['guid']==$guid &amp;&amp; $data['password'] == $password &amp;&amp; $data['account_status']=='active')
+      return true;
+  return false;
+}
+</code></pre>
+<p>We see that it reads a JSON file and decodes it. There is some <code>if</code> condition that needs to be met to be accepted. Let’s look at the JSON file first, by going to the path <code>/data/login_info.json</code> at the root of the website i.e <code>0xf.at/data/login_info.json</code>. Only one of the JSON entries have the <code>account_status</code> as <code>active</code>. We need to use the username and password from this specific entry.</p>
+
+</article>
+</main>
+
+<footer>
+  <p><a href="https://github.com/mashybasker">github</a>	<a href="https://x.com/basum">x/twtr</a></p>
+</footer>
+
+<script src="/index.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlightjs-zig/dist/zig.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/x86asm.min.js"></script>
+<script>hljs.registerAliases(['asm', 'nasm'], {languageName: 'x86asm'}); hljs.highlightAll();</script>
+<script>
+  document.querySelectorAll('nav a').forEach(function(link) {
+    var href = link.getAttribute('href');
+    var path = window.location.pathname;
+    if (href === '/' ? path === '/' : path.startsWith(href)) {
+      link.classList.add('active');
+    }
+  });
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ]
+  })">
+</script>
+</body>
+</html>

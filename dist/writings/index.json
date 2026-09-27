@@ -1,5 +1,10 @@
 [
   {
+    "title": "0xfat CTF writeup Levels 11-20",
+    "date": "2026-09-27",
+    "url": "/writings/0xfat-writeup-11-20.html"
+  },
+  {
     "title": "Triggering Auto-Vectorization in Zig Standard Library method",
     "date": "2025-06-08",
     "url": "/writings/zig-autovector.html"
