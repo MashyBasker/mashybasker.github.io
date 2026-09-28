@@ -68,3 +68,97 @@ function pwCheck($guid,$password)
 ```
 We see that it reads a JSON file and decodes it. There is some `if` condition that needs to be met to be accepted. Let's look at the JSON file first, by going to the path `/data/login_info.json` at the root of the website i.e `0xf.at/data/login_info.json`. Only one of the JSON entries have the `account_status` as `active`. We need to use the username and password from this specific entry.
 
+### Level 15
+
+After putting in some inputs and checking their outputs, we notice a very straightforward pattern. Let's say an input string is made of the letters c1, c2, c3... and so on. The algorithm works like this
+
+```
+c1 c2 c3 c4
+|  |  |  |
++--|--|--|-> c1
+   +--|--|-> c2' (c2 + 1) // adding to the ASCII value of the character
+      +--|-> c3' (c3 + 2)
+         +-> c4' (c4 + 3)
+```
+
+A python script to give us the input when an output is provided.
+
+```python
+#/usr/bin/python3
+
+a = input("> ")
+s = a[0]
+for i, x in enumerate(a[1:]):
+    s += chr(ord(x) - (i+1))
+print(s)
+```
+
+### Level 16
+
+The PHP code uses Base64 encoding on the password and checks equality with a string. So, to get the password we can perform a decode on the string it is compared with.
+
+```shell
+echo 'YWQwZTdmNTI2NzA2N2UwOGQxYjM5ZTY3Mw==' | base64 -d
+```
+
+### Level 17
+
+We need to find a string that matches the given regex. There can be multiple answers. Refer [Regex101](https://regex101.com/) for help with regex.
+
+### Level 18
+
+This is a simple morse code decode. Use a simple website like [this](https://www.devoven.com/encoding/morse-decode).
+
+### Level 19
+
+This problem needs us to write a small program to get the output before the time runs out.
+
+```python
+s = {
+    "2": "abc",
+    "3": "def",
+    "4": "ghi",
+    "5": "jkl",
+    "6": "mno",
+    "7": "pqrs",
+    "8": "tuv",
+    "9": "wxyz",
+}
+
+vs = s.values()
+o = 0
+
+a = input("> ")
+for x in a:
+    if x.isalpha():
+        # look for it in the dict values
+        v = [d for d in vs if x in d][0]
+        # get its key
+        k = next((k for k, va in s.items() if va == v), None)
+        # get the index
+        idx = v.index(x) + 2
+        print(f"x = {x}, k = {k}, idx = {idx}")
+        #print(type(idx))
+        o += idx * int(k)
+    else:
+        o += int(x)
+print(o)
+```
+
+### Level 20
+
+We can do a brute force checking all possible combinations from the file and get the concatenated string.
+
+```python
+from hashlib import md5
+
+a = open("wordlist.txt").read().split("\n")
+for x in a:
+    for b in a:
+        if x != b:
+            conc = x + b
+            print(f" checking {conc}")
+            if md5(conc.encode("utf-8")).hexdigest() == "9cb70a10d800fe17094b27ebfdc9d3b6":
+                print(f"found {conc}")
+                break
+```
