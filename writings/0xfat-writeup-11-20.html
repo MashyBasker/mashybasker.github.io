@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>0xfat CTF writeup Levels 11-20</title>
+  <link rel="stylesheet" href="/reset.css">
+  <link rel="stylesheet" href="/index.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/base16/material-lighter.min.css">
+  <link rel="stylesheet" media="(prefers-color-scheme: dark)" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/base16/material-darker.min.css">
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+    main { flex: 1; }
+    header { display: flex; justify-content: flex-end; align-items: center; margin-bottom: calc(var(--line-height) * 2); }
+    nav { display: flex; gap: 2ch; margin: 0; }
+    nav a { margin: 0; }
+  </style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="/">home</a>
+<a href="/about">about</a>
+<a href="/writings">writings</a>
+<a href="/work">work</a>
+<a href="/cv.pdf">cv</a>
+  </nav>
+</header>
+
+<main>
+<article>
+  <h1>0xfat CTF writeup Levels 11-20</h1>
+  <p class="date">2026-09-27</p>
+  <h2>Introduction</h2>
+<p>I’ve recently restarted solving CTF challenges as a way to get into exploit development and security research. I found this website <a href="https://0xf.at/">0xfat.io</a> to solve some basic to and slightly difficult challenges. For some of the problems I needed help, and searched for writeups. I found this <a href="https://n0x.io/posts/0xfat_1/">blog</a>, however it had solutions only for levels 1 to 10.</p>
+<p>I will be adding the solutions from level 11 onwards in this post. Currently I have added till level 20.</p>
+<h3>Level 11</h3>
+<p>The password is given by the output of the following PHP code</p>
+<pre><code class="language-PHP">function pwCheck($password)
+{
+    if($password==date(&quot;d.m.Y&quot;)) //GMT +1
+        return true;
+    else return false;
+}
+</code></pre>
+<p>This is very simple and the password is what the current date is, separated by dots in the format <code>&lt;day&gt;.&lt;month&gt;.&lt;year&gt;</code></p>
+<h3>Level 12</h3>
+<p>The problem states that the flag is the sum of the numbers from 1 to 435. This can be simply computed by using the formula</p>
+<p>$$\sum_{i=1}^{n} = \frac{n \times (n+1)}{2}$$</p>
+<p>This will give us the sum.</p>
+<h3>Level 13</h3>
+<p>Again we are given a piece of PHP code.</p>
+<pre><code class="language-PHP">function pwCheck($username,$password)
+{
+    if(!$username || !$password) return false;
+    if(strlen($username)==$password)
+        return true;
+    else return false;
+}
+</code></pre>
+<p>We just need to provide a username and use the length of the username as password.</p>
+<h3>Level 14</h3>
+<p>This time we are given another code.</p>
+<pre><code class="language-PHP">function pwCheck($guid,$password)
+{
+  if(!$guid || !$password) return false;
+  $users = implode(file('/data/login_info.json'));
+  $json = json_decode($users,true);
+
+  foreach($json['result'] as $data)
+    if($data['guid']==$guid &amp;&amp; $data['password'] == $password &amp;&amp; $data['account_status']=='active')
+      return true;
+  return false;
+}
+</code></pre>
+<p>We see that it reads a JSON file and decodes it. There is some <code>if</code> condition that needs to be met to be accepted. Let’s look at the JSON file first, by going to the path <code>/data/login_info.json</code> at the root of the website i.e <code>0xf.at/data/login_info.json</code>. Only one of the JSON entries have the <code>account_status</code> as <code>active</code>. We need to use the username and password from this specific entry.</p>
+<h3>Level 15</h3>
+<p>After putting in some inputs and checking their outputs, we notice a very straightforward pattern. Let’s say an input string is made of the letters c1, c2, c3… and so on. The algorithm works like this</p>
+<pre><code>c1 c2 c3 c4
+|  |  |  |
++--|--|--|-&gt; c1
+   +--|--|-&gt; c2' (c2 + 1) // adding to the ASCII value of the character
+      +--|-&gt; c3' (c3 + 2)
+         +-&gt; c4' (c4 + 3)
+</code></pre>
+<p>A python script to give us the input when an output is provided.</p>
+<pre><code class="language-python">#/usr/bin/python3
+
+a = input(&quot;&gt; &quot;)
+s = a[0]
+for i, x in enumerate(a[1:]):
+    s += chr(ord(x) - (i+1))
+print(s)
+</code></pre>
+<h3>Level 16</h3>
+<p>The PHP code uses Base64 encoding on the password and checks equality with a string. So, to get the password we can perform a decode on the string it is compared with.</p>
+<pre><code class="language-shell">echo 'YWQwZTdmNTI2NzA2N2UwOGQxYjM5ZTY3Mw==' | base64 -d
+</code></pre>
+<h3>Level 17</h3>
+<p>We need to find a string that matches the given regex. There can be multiple answers. Refer <a href="https://regex101.com/">Regex101</a> for help with regex.</p>
+<h3>Level 18</h3>
+<p>This is a simple morse code decode. Use a simple website like <a href="https://www.devoven.com/encoding/morse-decode">this</a>.</p>
+<h3>Level 19</h3>
+<p>This problem needs us to write a small program to get the output before the time runs out.</p>
+<pre><code class="language-python">s = {
+    &quot;2&quot;: &quot;abc&quot;,
+    &quot;3&quot;: &quot;def&quot;,
+    &quot;4&quot;: &quot;ghi&quot;,
+    &quot;5&quot;: &quot;jkl&quot;,
+    &quot;6&quot;: &quot;mno&quot;,
+    &quot;7&quot;: &quot;pqrs&quot;,
+    &quot;8&quot;: &quot;tuv&quot;,
+    &quot;9&quot;: &quot;wxyz&quot;,
+}
+
+vs = s.values()
+o = 0
+
+a = input(&quot;&gt; &quot;)
+for x in a:
+    if x.isalpha():
+        # look for it in the dict values
+        v = [d for d in vs if x in d][0]
+        # get its key
+        k = next((k for k, va in s.items() if va == v), None)
+        # get the index
+        idx = v.index(x) + 2
+        print(f&quot;x = {x}, k = {k}, idx = {idx}&quot;)
+        #print(type(idx))
+        o += idx * int(k)
+    else:
+        o += int(x)
+print(o)
+</code></pre>
+<h3>Level 20</h3>
+<p>We can do a brute force checking all possible combinations from the file and get the concatenated string.</p>
+<pre><code class="language-python">from hashlib import md5
+
+a = open(&quot;wordlist.txt&quot;).read().split(&quot;\n&quot;)
+for x in a:
+    for b in a:
+        if x != b:
+            conc = x + b
+            print(f&quot; checking {conc}&quot;)
+            if md5(conc.encode(&quot;utf-8&quot;)).hexdigest() == &quot;9cb70a10d800fe17094b27ebfdc9d3b6&quot;:
+                print(f&quot;found {conc}&quot;)
+                break
+</code></pre>
+
+</article>
+</main>
+
+<footer>
+  <p><a href="https://github.com/mashybasker">github</a>	<a href="https://x.com/basum">x/twtr</a></p>
+</footer>
+
+<script src="/index.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlightjs-zig/dist/zig.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/x86asm.min.js"></script>
+<script>hljs.registerAliases(['asm', 'nasm'], {languageName: 'x86asm'}); hljs.highlightAll();</script>
+<script>
+  document.querySelectorAll('nav a').forEach(function(link) {
+    var href = link.getAttribute('href');
+    var path = window.location.pathname;
+    if (href === '/' ? path === '/' : path.startsWith(href)) {
+      link.classList.add('active');
+    }
+  });
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ]
+  })">
+</script>
+</body>
+</html>

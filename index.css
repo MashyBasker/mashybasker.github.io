@@ -44,6 +44,10 @@
   margin-top: var(--line-height);
 }
 
+.katex * {
+  margin-top: 0
+}
+
 html {
   display: flex;
   width: 100%;
