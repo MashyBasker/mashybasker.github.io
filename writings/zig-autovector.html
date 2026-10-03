@@ -32,10 +32,10 @@
 <article>
   <h1>Triggering Auto-Vectorization in Zig Standard Library method</h1>
   <p class="date">2025-06-08</p>
-  <h2>Introduction</h2>
+  <h2><a href="#introduction" aria-hidden="true" class="anchor" id="introduction"></a>Introduction</h2>
 <p>I read <a href="https://sivukhin.github.io/find-slice-element-position-in-rust.html">this post</a> recently by Nikita Sivukhin. In it, they refactor a <code>find</code> method to locate the position of an element in a slice. The optimization takes advantage of LLVM’s auto-vectorization to improve performance.</p>
 <p>I decided to apply the techniques discussed to the <code>std.mem.allEqual</code> function in Zig’s standard library to investigate how vectorization could affect its performance.</p>
-<h2>The Standard Library</h2>
+<h2><a href="#the-standard-library" aria-hidden="true" class="anchor" id="the-standard-library"></a>The Standard Library</h2>
 <p>The <code>allEqual</code> method is defined as</p>
 <blockquote>
 <p>Returns true if all elements in a slice are equal to the scalar value provided</p>
@@ -83,7 +83,7 @@
 <p><!-- raw HTML omitted --><!-- raw HTML omitted -->
 However, this approach lacks vectorization. Why doesn’t LLVM apply it? To understand what might be preventing vectorization, we can check the <a href="https://llvm.org/docs/Remarks.html">LLVM optimization remarks</a> for clues.</p>
 <p>Unlike Rust, Zig doesn’t support passing arbitrary LLVM flags such as <code>-pass-remarks</code>, <code>-pass-remarks-missed</code>, or <code>-pass-remarks-analysis</code> directly. To work around this, we need to first emit the LLVM IR using the <code>-emit-llvm-ir</code> flag to generate a <code>.ll</code> file. Then use the <a href="https://llvm.org/docs/CommandGuide/opt.html"><code>llvm-opt</code></a> tool on this file to generate the optimization remarks.</p>
-<h3>Setting up the development environment</h3>
+<h3><a href="#setting-up-the-development-environment" aria-hidden="true" class="anchor" id="setting-up-the-development-environment"></a>Setting up the development environment</h3>
 <p>I used <a href="https://nix.dev/">Nix</a> with <a href="https://devenv.sh/">Devenv</a> to set up the environment. Just run <code>devenv init</code> in your project directory and configure the <code>devenv.nix</code> file as needed:</p>
 <pre><code class="language-console">{ pkgs, lib, config, inputs, ... }:
 
@@ -96,7 +96,7 @@ However, this approach lacks vectorization. Why doesn’t LLVM apply it? To unde
 }
 </code></pre>
 <p>Finally execute <code>devenv shell</code> to build the environment.</p>
-<h3>Investigation</h3>
+<h3><a href="#investigation" aria-hidden="true" class="anchor" id="investigation"></a>Investigation</h3>
 <p>We put the following slightly modified code in a <code>test.zig</code> file.</p>
 <pre><code class="language-zig">const std = @import(&quot;std&quot;);
 
@@ -120,7 +120,7 @@ remark: mem.zig:1191:10: loop not vectorized
 </code></pre>
 <p>The remark <code>loop not vectorized: could not determine number of loop iterations</code> means the compiler can’t statically determine how many times the loop will run. Vectorization needs predictable iteration counts to safely group operations into SIMD instructions, which is handled by the <a href="https://llvm.org/docs/Vectorizers.html#loop-vectorizer">LoopVectorizer</a>.</p>
 <p>This can be caused by non-constant loop bounds or early exits. In the original implementation of <code>std.mem.allEqual</code> in the standard library, there’s an early <code>return</code> statement inside the loop. That’s what prevents the loop from being vectorized.</p>
-<h3>Refactor and Restructure</h3>
+<h3><a href="#refactor-and-restructure" aria-hidden="true" class="anchor" id="refactor-and-restructure"></a>Refactor and Restructure</h3>
 <p>To trigger loop vectorization, the implementation must be modified to not use early returns:</p>
 <pre><code class="language-zig">export fn allEqual_no_early_stop(slice: [*]const u8, len: usize, scalar: u8) bool {
     var m: bool = true;
@@ -176,7 +176,7 @@ remark: w.zig:11:15: unrolled loop by a factor of 8 with run-time trip count
 <p>Cannot SLP vectorize list: vectorization was impossible with available vectorization factors</p>
 </blockquote>
 <p>The <code>SLPVectorizer</code> combines similar independent instructions into vector instructions. This could not be achieved here due to the reduction pattern in the code <code>m = m and (item == scalar)</code>  as well as the dependency chain.</p>
-<h3>Data Dependency Chain</h3>
+<h3><a href="#data-dependency-chain" aria-hidden="true" class="anchor" id="data-dependency-chain"></a>Data Dependency Chain</h3>
 <p>In the current implementation there is:</p>
 <pre><code class="language-zig">m = m and (item == scalar);
 </code></pre>
@@ -226,7 +226,7 @@ remark: w.zig:4:15: loop not vectorized: vectorization and interleaving are expl
 </li>
 </ul>
 <p>Since we did not use any such disabling flags, the remark likely results from the second reason. Indicating that the loops have already been successfully vectorized.</p>
-<h2>Results</h2>
+<h2><a href="#results" aria-hidden="true" class="anchor" id="results"></a>Results</h2>
 <p>Benchmarking the stdlib implementation against the new implementation that triggers LLVM’s auto-vectorizer. The benchmark is performed against 3 scenarios:</p>
 <ol>
 <li>All elements of the slice match the target.</li>
@@ -308,9 +308,9 @@ remark: w.zig:4:15: loop not vectorized: vectorization and interleaving are expl
 </tr>
 </tbody>
 </table>
-<h2>Conclusion</h2>
+<h2><a href="#conclusion" aria-hidden="true" class="anchor" id="conclusion"></a>Conclusion</h2>
 <p>The auto-vectorized implementation performs well only when all elements match the scalar value or the first mismatch is near the end. If there’s a mismatch early on, the early-stopping version is faster. It returns as soon as a mismatch is found, while the vectorized version still scans the entire slice to count all mismatches.</p>
-<h2>References</h2>
+<h2><a href="#references" aria-hidden="true" class="anchor" id="references"></a>References</h2>
 <ul>
 <li><a href="https://llvm.org/docs/Vectorizers.html">Auto-Vectorization in LLVM</a></li>
 <li><a href="https://cvw.cac.cornell.edu/vector/coding/data-dependencies">Cornell Virtual Workshop - Data Dependencies</a></li>

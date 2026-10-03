@@ -1,5 +1,10 @@
 [
   {
+    "title": "Setting up CUDA and NVIDIA drivers in NixOS",
+    "date": "2026-09-30",
+    "url": "/writings/setting-up-cuda-in-nixos.html"
+  },
+  {
     "title": "0xfat CTF writeup Levels 11-20",
     "date": "2026-09-27",
     "url": "/writings/0xfat-writeup-11-20.html"
