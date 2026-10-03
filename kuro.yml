@@ -8,6 +8,8 @@ socials:
     url: https://github.com/mashybasker
   - label: x/twtr
     url: https://x.com/basum
+    
+favicon: "/favicon.ico"
 
 pages:
   - label: home
