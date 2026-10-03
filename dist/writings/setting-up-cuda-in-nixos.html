@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Setting up CUDA and NVIDIA drivers in NixOS</title>
+  <link rel="stylesheet" href="/reset.css">
+  <link rel="stylesheet" href="/index.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/base16/material-lighter.min.css">
+  <link rel="stylesheet" media="(prefers-color-scheme: dark)" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/base16/material-darker.min.css">
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+    main { flex: 1; }
+    header { display: flex; justify-content: flex-end; align-items: center; margin-bottom: calc(var(--line-height) * 2); }
+    nav { display: flex; gap: 2ch; margin: 0; }
+    nav a { margin: 0; }
+  </style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="/">home</a>
+<a href="/about">about</a>
+<a href="/writings">writings</a>
+<a href="/work">work</a>
+<a href="/cv.pdf">cv</a>
+  </nav>
+</header>
+
+<main>
+<article>
+  <h1>Setting up CUDA and NVIDIA drivers in NixOS</h1>
+  <p class="date">2026-09-30</p>
+  <blockquote>
+<p>look at <a href="#tldr">tl;dr</a> if you’re only interested in getting the config</p>
+</blockquote>
+<h2><a href="#the-why-of-it" aria-hidden="true" class="anchor" id="the-why-of-it"></a>the why of it</h2>
+<p>every now and then i see an X post on ml compilers or someone asking the correct roadmap to become an inference engineer for the n-th time. this scratched the part of my brain that scolds me for not knowing thing. So, i figured i might as well have a taste of it and decide if i will enjoy it.</p>
+<p>i know i’m pretty late to it. the frontier has moved leaps and bounds, i feel almost everyone (or atleast those in my timeline) knows all about or already learning it. But, the good thing about being a little late is that the literature is laid out pretty well now and there’s more resources to rabbithole into.</p>
+<p>i am going to start with basic cuda first. i have an rtx 3050ti which i think will be good enough for the time being.</p>
+<h2><a href="#meat-and-potatoes" aria-hidden="true" class="anchor" id="meat-and-potatoes"></a>meat and potatoes</h2>
+<p>i like my things organised well, so i created a folder with a <code>shell.nix</code> file. this file would declare all the things i need such as <code>nvcc</code>, <code>nvidia-smi</code>, etc. currently, the file looks like this.</p>
+<pre><code>{ pkgs ? import &lt;nixpkgs&gt; { config.allowUnfree = true; } }:
+
+pkgs.mkShell {
+  name = &quot;cuda-env&quot;;
+
+  buildInputs = [
+    pkgs.cudatoolkit
+    pkgs.gcc12
+  ];
+
+  shellHook = ''
+    export CUDA_PATH=${pkgs.cudatoolkit}
+  '';
+}
+</code></pre>
+<p>the cudatoolkit contains the <code>nvcc</code> compiler along with other tools (<code>ptxas</code>, <code>cuobjdump</code>, etc.), runtime headers, specialized apis like cufft, cublas, etc. along with this, we need the correct c/c++ compiler for nvcc.</p>
+<p>this was good to go. so i ran <code>nix-shell</code> to build a new shell with all the dependencies and to test if it worked, i used the <code>nvidia-smi</code> command <em>and</em> it did not work.</p>
+<pre><code class="language-text">NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+</code></pre>
+<p>of course.</p>
+<h2><a href="#get-the-driver" aria-hidden="true" class="anchor" id="get-the-driver"></a>get the driver</h2>
+<p>nvidia drivers in linux is always a pain. i figured i should take a look at the friendly manual <a href="https://nixos.wiki/wiki/Nvidia">here</a>.</p>
+<p>first thing i realised is that i need to configure nvidia prime, since i’ve got both integrated (amd) and dedicated (nvidia) gpus. with this configuration, i can put my nvidia gpu to sleep unless it is explicitly called for some process, thereby optimizing power usage. this works perfectly for me, since i will probably only use it to run cuda code.</p>
+<p>while we’re at it, we might as well make the graphics gpu accelerated. to do this, we need to add the following lines to <code>/etc/nixos/configuration.nix</code></p>
+<pre><code>hardware.graphics = {
+  enable = true;
+  enable32Bit = true;
+};
+</code></pre>
+<p>this would let opengl be used for graphics via wayland or x11. the <code>enable32Bit</code> is for backwards compatibility with the 32-bit applications in a 64-bit host.</p>
+<p>to use <code>nvidia</code> graphics drivers, we will add the following line:</p>
+<pre><code>services.xserver.videoDrivers = [ &quot;nvidia&quot; ];
+</code></pre>
+<p>now, we need to choose which nvidia kernel modules to install. open source modules are preferred over proprietary ones. from the turing architecture onwards, the open-source models are supported. data center gpus like grace hopper or blackwell don’t even support proprietary drivers anymore. to do so, we add the line</p>
+<pre><code>hardware.nvidia.open = true;
+</code></pre>
+<blockquote>
+<p>make sure to have <code>nixpkgs.config.allowUnfree</code> set to <code>true</code> in the <code>configuration.nix</code> file because the nvidia drivers have an unfree license.</p>
+</blockquote>
+<p>to configure the nvidia drivers with prime we add the following lines,</p>
+<pre><code>hardware.nvidia = {
+  prime = {
+    offload.enable = true;
+    offload.enableOffloadCmd = true;
+    amdgpuBusId = &quot;PCI:6:0:0&quot;;
+    nvidiaBusId = &quot;PCI:1:0:0&quot;;
+  };
+};
+</code></pre>
+<p>what this does is use the amd gpu for rendering unless nvidia gpu is called explicitly by using <code>nvidia-offload &lt;app&gt;</code>. we also need the bus ids of the nvidia and the amd gpu respectively by using the command</p>
+<pre><code class="language-shell">lspci | grep -E 'VGA|3D'
+</code></pre>
+<p>you’ll get an output like this</p>
+<pre><code class="language-shell">01:00.0 VGA compatible controller: NVIDIA Corporation GA107M [GeForce RTX 3050 Ti Mobile] (rev a1)
+06:00.0 VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Rembrandt [Radeon 680M] (rev c8)
+</code></pre>
+<p>the numbers at the beginning are the bus ids. to use them in the config, we need to convert them to the format <code>PCI:BUS:SLOT:FUNCTION</code> after converting the digits to hex.</p>
+<p>for example, the nvidia bus will become</p>
+<pre><code class="language-shell">PCI:1:0:0
+</code></pre>
+<p>if you have an intel iGPU, the bus id name is <code>intelBusId</code></p>
+<h2><a href="#tldr" aria-hidden="true" class="anchor" id="tldr"></a>tldr</h2>
+<pre><code># add this in `/etc/nixos/configuration.nix` file
+
+hardware.graphics = {
+  enable = true;
+  enable32Bit = true;
+};
+
+services.xserver.videoDrivers = [ &quot;nvidia&quot; ];
+
+hardware.nvidia = {
+  open = true;
+  prime = {
+    sync.enable = true;
+    amdgpuBusId = &quot;PCI:6:0:0&quot;;
+    nvidiaBusId = &quot;PCI:1:0:0&quot;;
+  };
+};
+</code></pre>
+<p>and</p>
+<pre><code># add this in shell.nix file of the project directory
+
+{ pkgs ? import &lt;nixpkgs&gt; { config.allowUnfree = true; } }:
+
+pkgs.mkShell {
+  name = &quot;cuda-env&quot;;
+
+  buildInputs = [
+    pkgs.cudatoolkit
+    pkgs.gcc12
+  ];
+
+  shellHook = ''
+    export CUDA_PATH=${pkgs.cudatoolkit}
+  '';
+}
+</code></pre>
+<p>run <code>sudo nixos-rebuild switch</code> and perform a reboot. go to the work directory and run <code>nix-shell</code>, and you’re good to go.</p>
+<h2><a href="#now-what" aria-hidden="true" class="anchor" id="now-what"></a>now what</h2>
+<p>in the upcoming weeks i’ll be tinkering with cuda and ml compilers/frameworks. since i’m interested in the optimization part, maybe some mlir as well? we’ll see. i’ll keep posting if i find anything cool or just anything i want to write about. cya :)</p>
+
+</article>
+</main>
+
+<footer>
+  <p><a href="https://github.com/mashybasker">github</a>	<a href="https://x.com/basum">x/twtr</a></p>
+</footer>
+
+<script src="/index.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlightjs-zig/dist/zig.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/x86asm.min.js"></script>
+<script>hljs.registerAliases(['asm', 'nasm'], {languageName: 'x86asm'}); hljs.highlightAll();</script>
+<script>
+  document.querySelectorAll('nav a').forEach(function(link) {
+    var href = link.getAttribute('href');
+    var path = window.location.pathname;
+    if (href === '/' ? path === '/' : path.startsWith(href)) {
+      link.classList.add('active');
+    }
+  });
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ]
+  })">
+</script>
+</body>
+</html>
